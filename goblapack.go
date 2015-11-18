@@ -2,7 +2,6 @@ package goblapack
 
 import (
 	"errors"
-	"fmt"
 	"syscall"
 	"unsafe"
 )
@@ -43,10 +42,10 @@ func (m *Matrix) Copy() *Matrix {
 }
 
 // Invert calculates the inverse of the matrix.
-func (m *Matrix) Invert() *Matrix {
+func (m *Matrix) Invert() (*Matrix, error) {
 	inverse := m.Copy()
-	inverse.InvertInPlace()
-	return inverse
+	err := inverse.InvertInPlace()
+	return inverse, err
 }
 
 // InvertInPlace calculates the inverse of the matrix which is stored directly
@@ -72,23 +71,4 @@ func (m *Matrix) InvertInPlace() error {
 		return errors.New("Invalid data input")
 	}
 	return nil
-}
-
-func m() {
-	lib, err := syscall.LoadLibrary("goblapack.dll")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer syscall.FreeLibrary(lib)
-
-	handle, err := syscall.GetProcAddress(lib, "goblapack_invert")
-	data := []float64{0, 0.0, -0.5, 1.0}
-
-	var nargs uintptr = 2
-	r, _, err := syscall.Syscall(uintptr(handle), nargs, 2, uintptr(unsafe.Pointer(&data[0])), 0)
-
-	fmt.Println(int32(r))
-
-	fmt.Println(data)
 }
