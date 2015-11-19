@@ -22,6 +22,15 @@ func NewMatrix(rows, cols int) *Matrix {
 	return &m
 }
 
+// Eye returns the identity matrix of the given size.
+func Eye(size int) *Matrix {
+	eye := NewMatrix(size, size)
+	for i := 0; i < size; i++ {
+		eye.Set(i, i, 1)
+	}
+	return eye
+}
+
 // Get returns the value at the given row and column.
 func (m *Matrix) Get(row, col int) float64 {
 	i := row + m.Rows*col
@@ -39,6 +48,24 @@ func (m *Matrix) Copy() *Matrix {
 	c := NewMatrix(m.Rows, m.Cols)
 	copy(c.Data, m.Data)
 	return c
+}
+
+// Substract calculates A - B = C where A is the matrix on which this method is
+// called, B the method parameter, and C the return value. The matrix B can be
+// smaller as A; C will have the same size as A.
+func (m *Matrix) Substract(b *Matrix) (*Matrix, error) {
+	if b.Rows > m.Rows || b.Cols > m.Cols {
+		return nil, errors.New("Matrix substraction failed: B is larger than A")
+	}
+	c := m.Copy()
+	for row := 0; row < b.Rows; row++ {
+		for col := 0; col < b.Cols; col++ {
+			valA := m.Get(row, col)
+			valB := b.Get(row, col)
+			c.Set(row, col, valA-valB)
+		}
+	}
+	return c, nil
 }
 
 // Multiply calculates the matrix-matrix-product C = A * B where A is the matrix

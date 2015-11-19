@@ -30,10 +30,21 @@ func TestMultiply(t *testing.T) {
 	// B = [ 1 4 ; 2 5 ; 3 6 ]
 	b := &Matrix{Rows: 3, Cols: 2, Data: []float64{1, 2, 3, 4, 5, 6}}
 	c, err := a.Multiply(b)
-	assertArraysEqual([]float64{14, 32, 32, 77}, c.Data, t)
 	if err != nil {
 		t.Error(err)
 	}
+	assertArraysEqual([]float64{14, 32, 32, 77}, c.Data, t)
+}
+
+func TestSubstract(t *testing.T) {
+	// A = [ 1 2 3; 4 5 6]
+	a := &Matrix{Rows: 2, Cols: 3, Data: []float64{1, 4, 2, 5, 3, 6}}
+	b := Eye(2)
+	c, err := a.Substract(b)
+	if err != nil {
+		t.Error(err)
+	}
+	assertArraysEqual([]float64{0, 4, 2, 4, 3, 6}, c.Data, t)
 }
 
 func TestInvertInPlace(t *testing.T) {
