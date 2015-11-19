@@ -41,6 +41,30 @@ func (m *Matrix) Copy() *Matrix {
 	return c
 }
 
+// Multiply calculates the matrix-matrix-product C = A * B where A is the matrix
+// on which the method is called, B the method parameter, and C the return value.
+func (m *Matrix) Multiply(b *Matrix) (*Matrix, error) {
+	if m.Cols != b.Rows {
+		return nil, errors.New("Cannot multiply matrices: shapes do not match")
+	}
+	handle, err := syscall.GetProcAddress(nativeLib, "goblapack_mmult")
+	if err != nil {
+		return nil, err
+	}
+	c := NewMatrix(m.Rows, b.Cols)
+	aPtr := uintptr(unsafe.Pointer(&m.Data[0]))
+	bPtr := uintptr(unsafe.Pointer(&b.Data[0]))
+	cPtr := uintptr(unsafe.Pointer(&c.Data[0]))
+	syscall.Syscall6(uintptr(handle), 6,
+		uintptr(m.Rows),
+		uintptr(b.Cols),
+		uintptr(m.Cols),
+		aPtr,
+		bPtr,
+		cPtr)
+	return c, nil
+}
+
 // Invert calculates the inverse of the matrix.
 func (m *Matrix) Invert() (*Matrix, error) {
 	inverse := m.Copy()
@@ -59,10 +83,7 @@ func (m *Matrix) InvertInPlace() error {
 		return err
 	}
 	dataPtr := uintptr(unsafe.Pointer(&m.Data[0]))
-	r, _, err := syscall.Syscall(uintptr(handle), 2, uintptr(m.Rows), dataPtr, 0)
-	if err != nil {
-		return err
-	}
+	r, _, _ := syscall.Syscall(uintptr(handle), 2, uintptr(m.Rows), dataPtr, 0)
 	info := int(r)
 	if info > 0 {
 		return errors.New("Matrix is singular")
