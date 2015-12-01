@@ -1,3 +1,4 @@
 # compiled libraries
-goblapack.dll
-goblapack.so
+*.dll
+*.so
+*.a
