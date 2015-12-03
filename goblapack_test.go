@@ -18,12 +18,6 @@ func TestSetGet(t *testing.T) {
 	}
 }
 
-func TestNoNativeLibError(t *testing.T) {
-	if nativeLibError != nil {
-		t.Error(nativeLibError)
-	}
-}
-
 func TestMultiply(t *testing.T) {
 	// A = [ 1 2 3; 4 5 6]
 	a := &Matrix{Rows: 2, Cols: 3, Data: []float64{1, 4, 2, 5, 3, 6}}

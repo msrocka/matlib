@@ -1,9 +1,12 @@
 #goblapack
 goblapack is a thin Go layer for calling functions of the high performance
-math library [OpenBLAS](https://github.com/xianyi/OpenBLAS) via system calls.
-It does not require cgo; just put the native goblapack library (goblapack.dll on
-Windows, goblapack.so on Linux, Mac OS is currently not supported) next to your
-binary and it should work.
+math library [OpenBLAS](https://github.com/xianyi/OpenBLAS) via
+[cgo](https://golang.org/cmd/cgo/). It currently only contains the functions we
+need. For more complete BLAS and LAPACK bindings in Go, please have a look at
+the packages provided by the [gonum team](https://github.com/gonum).   
+
+
+
 
 On Windows we statically link all required libraries in the goblapack.dll. On
 Linux you have to install ##

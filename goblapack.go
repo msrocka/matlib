@@ -1,8 +1,14 @@
 package goblapack
 
+/*
+#cgo CFLAGS: -O3
+#cgo LDFLAGS: -L. -lgoblapack
+#include "goblapack.h"
+*/
+import "C"
+
 import (
 	"errors"
-	"syscall"
 	"unsafe"
 )
 
@@ -74,18 +80,14 @@ func (m *Matrix) Multiply(b *Matrix) (*Matrix, error) {
 	if m.Cols != b.Rows {
 		return nil, errors.New("Cannot multiply matrices: shapes do not match")
 	}
-	handle, err := syscall.GetProcAddress(nativeLib, "goblapack_mmult")
-	if err != nil {
-		return nil, err
-	}
 	c := NewMatrix(m.Rows, b.Cols)
-	aPtr := uintptr(unsafe.Pointer(&m.Data[0]))
-	bPtr := uintptr(unsafe.Pointer(&b.Data[0]))
-	cPtr := uintptr(unsafe.Pointer(&c.Data[0]))
-	syscall.Syscall6(uintptr(handle), 6,
-		uintptr(m.Rows),
-		uintptr(b.Cols),
-		uintptr(m.Cols),
+	aPtr := (*C.double)(unsafe.Pointer(&m.Data[0]))
+	bPtr := (*C.double)(unsafe.Pointer(&b.Data[0]))
+	cPtr := (*C.double)(unsafe.Pointer(&c.Data[0]))
+	C.goblapack_mmult(
+		C.int(m.Rows),
+		C.int(b.Cols),
+		C.int(m.Cols),
 		aPtr,
 		bPtr,
 		cPtr)
@@ -105,12 +107,8 @@ func (m *Matrix) InvertInPlace() error {
 	if m.Cols != m.Rows {
 		return errors.New("The matrix is not square")
 	}
-	handle, err := syscall.GetProcAddress(nativeLib, "goblapack_invert")
-	if err != nil {
-		return err
-	}
-	dataPtr := uintptr(unsafe.Pointer(&m.Data[0]))
-	r, _, _ := syscall.Syscall(uintptr(handle), 2, uintptr(m.Rows), dataPtr, 0)
+	dataPtr := (*C.double)(unsafe.Pointer(&m.Data[0]))
+	r := C.goblapack_invert(C.int(m.Rows), dataPtr)
 	info := int(r)
 	if info > 0 {
 		return errors.New("Matrix is singular")
