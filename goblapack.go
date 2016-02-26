@@ -56,10 +56,10 @@ func (m *Matrix) Copy() *Matrix {
 	return c
 }
 
-// Substract calculates A - B = C where A is the matrix on which this method is
+// Subtract calculates A - B = C where A is the matrix on which this method is
 // called, B the method parameter, and C the return value. The matrix B can be
 // smaller as A; C will have the same size as A.
-func (m *Matrix) Substract(b *Matrix) (*Matrix, error) {
+func (m *Matrix) Subtract(b *Matrix) (*Matrix, error) {
 	if b.Rows > m.Rows || b.Cols > m.Cols {
 		return nil, errors.New("Matrix substraction failed: B is larger than A")
 	}
