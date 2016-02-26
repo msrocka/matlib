@@ -18,6 +18,23 @@ func TestSetGet(t *testing.T) {
 	}
 }
 
+func TestGetPtr(t *testing.T) {
+	m := NewMatrix(5, 5)
+	for i := 0; i < 5; i++ {
+		ptr := m.GetPtr(i, i)
+		*ptr = 1
+	}
+	for row := 0; row < 5; row++ {
+		for col := 0; col < 5; col++ {
+			if row == col {
+				assertEqual(1, m.Get(row, col), t)
+			} else {
+				assertEqual(0, m.Get(row, col), t)
+			}
+		}
+	}
+}
+
 func TestMultiply(t *testing.T) {
 	// A = [ 1 2 3; 4 5 6]
 	a := &Matrix{Rows: 2, Cols: 3, Data: []float64{1, 4, 2, 5, 3, 6}}
@@ -34,7 +51,7 @@ func TestSubstract(t *testing.T) {
 	// A = [ 1 2 3; 4 5 6]
 	a := &Matrix{Rows: 2, Cols: 3, Data: []float64{1, 4, 2, 5, 3, 6}}
 	b := Eye(2)
-	c, err := a.Substract(b)
+	c, err := a.Subtract(b)
 	if err != nil {
 		t.Error(err)
 	}

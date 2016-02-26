@@ -43,6 +43,13 @@ func (m *Matrix) Get(row, col int) float64 {
 	return m.Data[i]
 }
 
+// GetPtr returns a pointer to the matrix cell with the given
+// row and column.
+func (m *Matrix) GetPtr(row, col int) *float64 {
+	i := row + m.Rows*col
+	return &m.Data[i]
+}
+
 // Set sets the matrix cell at the given row and column to the given value.
 func (m *Matrix) Set(row, col int, value float64) {
 	i := row + m.Rows*col
