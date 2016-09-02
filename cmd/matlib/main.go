@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/GreenDelta/matlib"
 )
@@ -76,5 +77,23 @@ func show() {
 		fmt.Println(err.Error())
 		return
 	}
-	fmt.Println(r)
+	m, err := matlib.Load(os.Args[2])
+	if err != nil {
+		fmt.Println("Failed to read matrix from", os.Args[2], err.Error())
+		return
+	}
+
+	err = r.apply(m)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	for row := r.startRow; row < r.endRow; row++ {
+		line := ""
+		for col := r.startCol; col < r.endCol; col++ {
+			val := m.Get(row, col)
+			line = line + strconv.FormatFloat(val, 'E', 4, 64) + "  "
+		}
+		fmt.Println(line)
+	}
 }

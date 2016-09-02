@@ -4,9 +4,14 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+
+	"github.com/GreenDelta/matlib"
 )
 
-var errRangeFormat = errors.New("Range has invalid format.")
+var (
+	errRangeFormat = errors.New("Range has invalid format.")
+	errOutOfBounds = errors.New("Range is larger than matrix size")
+)
 
 type tRange struct {
 	startRow int
@@ -83,4 +88,26 @@ func parseRangePart(part string) (int, int, error) {
 		end, start = start, end
 	}
 	return start, end, nil
+}
+
+func (r *tRange) apply(m *matlib.Matrix) error {
+	if r.startRow < 0 {
+		r.startRow = 0
+	}
+	if r.startCol < 0 {
+		r.startCol = 0
+	}
+	if r.endRow < 0 {
+		r.endRow = m.Rows
+	}
+	if r.endCol < 0 {
+		r.endCol = m.Cols
+	}
+	if r.startRow > m.Rows || r.endRow > m.Rows {
+		return errOutOfBounds
+	}
+	if r.startCol > m.Cols || r.endCol > m.Cols {
+		return errOutOfBounds
+	}
+	return nil
 }
