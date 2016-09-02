@@ -1,4 +1,4 @@
-package goblapack
+package matlib
 
 import (
 	"math"

@@ -1,9 +1,9 @@
-package goblapack
+package matlib
 
 /*
 #cgo CFLAGS: -O3
-#cgo LDFLAGS: -L. -lgoblapack
-#include "goblapack.h"
+#cgo LDFLAGS: -L. -lmatlib
+#include "matlib.h"
 */
 import "C"
 
@@ -91,7 +91,7 @@ func (m *Matrix) Multiply(b *Matrix) (*Matrix, error) {
 	aPtr := (*C.double)(unsafe.Pointer(&m.Data[0]))
 	bPtr := (*C.double)(unsafe.Pointer(&b.Data[0]))
 	cPtr := (*C.double)(unsafe.Pointer(&c.Data[0]))
-	C.goblapack_mmult(
+	C.matlib_mmult(
 		C.int(m.Rows),
 		C.int(b.Cols),
 		C.int(m.Cols),
@@ -115,7 +115,7 @@ func (m *Matrix) InvertInPlace() error {
 		return errors.New("The matrix is not square")
 	}
 	dataPtr := (*C.double)(unsafe.Pointer(&m.Data[0]))
-	r := C.goblapack_invert(C.int(m.Rows), dataPtr)
+	r := C.matlib_invert(C.int(m.Rows), dataPtr)
 	info := int(r)
 	if info > 0 {
 		return errors.New("Matrix is singular")

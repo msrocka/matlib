@@ -1,4 +1,4 @@
-# Building goblapack.so on Linux
+# Building matlib.so on Linux
 
 ## Building OpenBLAS
 The first step is to compile the [OpenBLAS](https://github.com/xianyi/OpenBLAS)
@@ -28,8 +28,8 @@ you have to install gfortran. When everything is ready, just run make:
 
     make
 
-## Building goblapack.so
-To build the shared goblapack library on Linux copy the static library from
+## Building matlib.so
+To build the shared matlib.so library on Linux copy the static library from
 the OpenBLAS build `libopenblasp_*.a` as `libopenblas.a` to the `native` folder.
 After this you can run the `build.sh` script (you may have to make it executable
 via `chmod +x`) and it should generate the goblapack.so file in top-project

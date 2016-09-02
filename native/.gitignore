@@ -1,4 +1,4 @@
 libgfortan.a
 libopenblas.a
 
-goblapack.dll
+matlib.dll

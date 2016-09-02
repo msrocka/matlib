@@ -38,7 +38,7 @@ extern void dgetri_(int* N, double* A, int* LDA, int* IPIV, double* WORK,
  * n: size of the matrix (rows and columns)
  * a: matrix data in column-major-order
  */
-int goblapack_invert(int n, double* a) {
+int matlib_invert(int n, double* a) {
 	int *ipiv = (int *) malloc(n * sizeof (int));
     int lwork = 64 * 2 * n;
     double *work = (double *) malloc(lwork * sizeof (double));
@@ -63,7 +63,7 @@ int goblapack_invert(int n, double* a) {
  * b: matrix B (size = k * colsB)
  * c: matrix C (size = rowsA * colsB)
  */
-void goblapack_mmult(int rowsA, int colsB, int k, double *a, double *b,
+void matlib_mmult(int rowsA, int colsB, int k, double *a, double *b,
     double *c) {
     char trans = 'N';
     double alpha = 1;
