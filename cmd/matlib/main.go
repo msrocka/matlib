@@ -20,6 +20,8 @@ func main() {
 		help()
 	case "-i", "invert":
 		invert()
+	case "-s", "show":
+		show()
 	default:
 		fmt.Println("Unknown command:", cmd, " (try help)")
 	}
@@ -35,6 +37,10 @@ Usage: matlib <command> <args>
 -h, help                     prints this help
 -i, invert <input> <output>  inverts the matrix in the input file and writes it
                              to the output file
+-s, show <input> <range>     shows the matrix content of the input file of the
+                             given range. the range contains the start and end
+                             rows and columns in Pythons slice notation, 
+                             e.g. [3:8,4:6] -> row 3 to 8 and column 4 to 6    
 `
 	fmt.Println(text)
 }
@@ -58,4 +64,17 @@ func invert() {
 	if err != nil {
 		fmt.Println("Failed to write inverse to", os.Args[3], err.Error())
 	}
+}
+
+func show() {
+	if len(os.Args) < 4 {
+		fmt.Println("Not enough arguments: show <input> <range>")
+		return
+	}
+	r, err := parseRange(os.Args[3])
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(r)
 }
