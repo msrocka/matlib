@@ -1,9 +1,7 @@
-#goblapack
-goblapack is a thin Go layer for calling functions of the high performance
-math library [OpenBLAS](https://github.com/xianyi/OpenBLAS) from Go. It
-currently only contains a limited set of functions. For more complete BLAS and
-LAPACK bindings in Go, please have a look at the packages provided by the
-[gonum team](https://github.com/gonum).   
+#matlib
+matlib is a small package for the creation and testing of matrices for
+[openLCA](https://github.com/GreenDelta/olca-app). It uses the high 
+performance math library [OpenBLAS](https://github.com/xianyi/OpenBLAS).
 
 ## File format
 This package provides methods for loading (`goblapack.Load`) and saving 
