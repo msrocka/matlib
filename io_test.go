@@ -7,7 +7,7 @@ import (
 
 func TestSaveLoad(t *testing.T) {
 
-	file := os.TempDir() + "/_goblapack_test_io.bin"
+	file := os.TempDir() + "/_matlib_test_io.bin"
 
 	// create and save
 	m := Zeros(42, 24)
@@ -42,4 +42,21 @@ func TestSaveLoad(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestLoadColumn(t *testing.T) {
+	m := MakeMatrix([][]float64{
+		{1, 2, 3},
+		{1, 2, 3},
+		{1, 2, 3},
+		{1, 2, 3}})
+	file := os.TempDir() + "/_matlib_test_load_column.bin"
+	Save(m, file)
+
+	col, _ := LoadColumn(file, 0)
+	assertArraysEqual([]float64{1, 1, 1, 1}, col, t)
+	col, _ = LoadColumn(file, 1)
+	assertArraysEqual([]float64{2, 2, 2, 2}, col, t)
+	col, _ = LoadColumn(file, 2)
+	assertArraysEqual([]float64{3, 3, 3, 3}, col, t)
 }
