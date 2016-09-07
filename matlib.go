@@ -20,8 +20,28 @@ type Matrix struct {
 	Data []float64
 }
 
-// NewMatrix creates a new matrix of the give size.
-func NewMatrix(rows, cols int) *Matrix {
+// MakeMatrix is a convenience function for creating a matrix from a 2
+// dimensional float slice. It is mainly used for testing purposes.
+func MakeMatrix(data [][]float64) *Matrix {
+	rows := len(data)
+	cols := 1
+	for i := range data {
+		size := len(data[i])
+		if size > cols {
+			cols = size
+		}
+	}
+	m := Zeros(rows, cols)
+	for i := range data {
+		for j := range data[i] {
+			m.Set(i, j, data[i][j])
+		}
+	}
+	return m
+}
+
+// Zeros creates a new matrix with all values as 0 of the give size.
+func Zeros(rows, cols int) *Matrix {
 	size := rows * cols
 	m := Matrix{Rows: rows, Cols: cols}
 	m.Data = make([]float64, size, size)
@@ -30,7 +50,7 @@ func NewMatrix(rows, cols int) *Matrix {
 
 // Eye returns the identity matrix of the given size.
 func Eye(size int) *Matrix {
-	eye := NewMatrix(size, size)
+	eye := Zeros(size, size)
 	for i := 0; i < size; i++ {
 		eye.Set(i, i, 1)
 	}
@@ -58,7 +78,7 @@ func (m *Matrix) Set(row, col int, value float64) {
 
 // Copy creates a copy of the matrix.
 func (m *Matrix) Copy() *Matrix {
-	c := NewMatrix(m.Rows, m.Cols)
+	c := Zeros(m.Rows, m.Cols)
 	copy(c.Data, m.Data)
 	return c
 }
@@ -87,7 +107,7 @@ func (m *Matrix) Multiply(b *Matrix) (*Matrix, error) {
 	if m.Cols != b.Rows {
 		return nil, errors.New("Cannot multiply matrices: shapes do not match")
 	}
-	c := NewMatrix(m.Rows, b.Cols)
+	c := Zeros(m.Rows, b.Cols)
 	aPtr := (*C.double)(unsafe.Pointer(&m.Data[0]))
 	bPtr := (*C.double)(unsafe.Pointer(&b.Data[0]))
 	cPtr := (*C.double)(unsafe.Pointer(&c.Data[0]))

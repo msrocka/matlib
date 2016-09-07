@@ -9,6 +9,38 @@ import (
 	"os"
 )
 
+// LoadColumn reads the given (zero-based) column from the given matrix file.
+func LoadColumn(file string, column int) ([]float64, error) {
+	f, err := os.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	rows, _, err := readShape(f)
+	if err != nil {
+		return nil, err
+	}
+
+	offset := column*rows*8 + 8
+	_, err = f.Seek(int64(offset), 0)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := bufio.NewReader(f)
+	data := make([]float64, rows)
+	bin8 := make([]byte, 8)
+	for row := 0; row < rows; row++ {
+		val, err := readFloat(bin8, buf)
+		if err != nil {
+			return nil, err
+		}
+		data[row] = val
+	}
+	return data, nil
+}
+
 // Load reads a matrix from the given file.
 func Load(file string) (*Matrix, error) {
 
@@ -18,20 +50,14 @@ func Load(file string) (*Matrix, error) {
 	}
 	defer f.Close()
 	buf := bufio.NewReader(f)
-	bin4 := make([]byte, 4)
+
+	rows, cols, err := readShape(buf)
+	if err != nil {
+		return nil, err
+	}
+
+	m := Zeros(rows, cols)
 	bin8 := make([]byte, 8)
-
-	rows, err := readInt(bin4, buf)
-	if err != nil {
-		return nil, err
-	}
-	cols, err := readInt(bin4, buf)
-	if err != nil {
-		return nil, err
-	}
-
-	m := NewMatrix(rows, cols)
-
 	for col := 0; col < cols; col++ {
 		for row := 0; row < rows; row++ {
 			val, err := readFloat(bin8, buf)
@@ -42,6 +68,19 @@ func Load(file string) (*Matrix, error) {
 		}
 	}
 	return m, nil
+}
+
+func readShape(reader io.Reader) (int, int, error) {
+	bin4 := make([]byte, 4)
+	rows, err := readInt(bin4, reader)
+	if err != nil {
+		return -1, -1, err
+	}
+	cols, err := readInt(bin4, reader)
+	if err != nil {
+		return -1, -1, err
+	}
+	return rows, cols, nil
 }
 
 func readFloat(bin8 []byte, r io.Reader) (float64, error) {

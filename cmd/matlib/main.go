@@ -92,7 +92,7 @@ func show() {
 		line := ""
 		for col := r.startCol; col < r.endCol; col++ {
 			val := m.Get(row, col)
-			line = line + strconv.FormatFloat(val, 'E', 4, 64) + "  "
+			line = line + strconv.FormatFloat(val, 'E', 4, 64) + "\t"
 		}
 		fmt.Println(line)
 	}

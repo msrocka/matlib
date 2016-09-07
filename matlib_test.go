@@ -5,10 +5,33 @@ import (
 	"testing"
 )
 
+func TestMakeMatrix(t *testing.T) {
+	m := MakeMatrix([][]float64{
+		{1, 2, 3},
+		{1, 2, 3},
+		{1, 2, 3},
+		{1, 2, 3}})
+	if m.Rows != 4 || m.Cols != 3 {
+		t.Error("Wrong matrix size: ", m.Rows, "x", m.Cols)
+	}
+	for row := 0; row < m.Rows; row++ {
+		for col := 0; col < m.Cols; col++ {
+			switch col {
+			case 0:
+				assertEqual(1, m.Get(row, col), t)
+			case 1:
+				assertEqual(2, m.Get(row, col), t)
+			case 3:
+				assertEqual(2, m.Get(row, col), t)
+			}
+		}
+	}
+}
+
 func TestSetGet(t *testing.T) {
 	rows := 4
 	cols := 5
-	m := NewMatrix(rows, cols)
+	m := Zeros(rows, cols)
 	for row := 0; row < rows; row++ {
 		for col := 0; col < cols; col++ {
 			assertEqual(0, m.Get(row, col), t)
@@ -19,7 +42,7 @@ func TestSetGet(t *testing.T) {
 }
 
 func TestGetPtr(t *testing.T) {
-	m := NewMatrix(5, 5)
+	m := Zeros(5, 5)
 	for i := 0; i < 5; i++ {
 		ptr := m.GetPtr(i, i)
 		*ptr = 1
@@ -59,7 +82,7 @@ func TestSubstract(t *testing.T) {
 }
 
 func TestInvertInPlace(t *testing.T) {
-	m := NewMatrix(2, 2)
+	m := Zeros(2, 2)
 	m.Set(0, 0, 1.0)
 	m.Set(0, 1, -0.5)
 	m.Set(1, 1, 1.0)
@@ -72,7 +95,7 @@ func TestInvertInPlace(t *testing.T) {
 }
 
 func TestInvert(t *testing.T) {
-	m := NewMatrix(2, 2)
+	m := Zeros(2, 2)
 	m.Set(0, 0, 1.0)
 	m.Set(0, 1, -0.5)
 	m.Set(1, 1, 1.0)

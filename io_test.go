@@ -10,7 +10,7 @@ func TestSaveLoad(t *testing.T) {
 	file := os.TempDir() + "/_goblapack_test_io.bin"
 
 	// create and save
-	m := NewMatrix(42, 24)
+	m := Zeros(42, 24)
 	for row := 0; row < m.Rows; row++ {
 		for col := 0; col < m.Cols; col++ {
 			if row == col {
