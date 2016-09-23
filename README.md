@@ -3,6 +3,14 @@ matlib is a small package for the creation and testing of matrices for
 [openLCA](https://github.com/GreenDelta/olca-app). It uses the high 
 performance math library [OpenBLAS](https://github.com/xianyi/OpenBLAS).
 
+## Usage
+Checkout this repository:
+
+    git clone https://github.com/GreenDelta/matlib.git
+
+Build the native library for native library for your system as described
+in `native/Build_<your_os>.md`.
+
 ## File format
 This package provides methods for loading (`goblapack.Load`) and saving 
 (`goblapack.Save`) matrices from files in a simple binary format:

@@ -2,14 +2,17 @@
 
 ## Building OpenBLAS
 The first step is to compile the [OpenBLAS](https://github.com/xianyi/OpenBLAS)
-library. To do that, get the source:
+library. To do that, get the source from:
 
     git clone https://github.com/xianyi/OpenBLAS
 
-and switch to the master branch (the 'develop' branch is the default branch):
+Then checkout the latest stable version which you can find from the tags:
 
-    cd OpenBLAS
-    git checkout master
+    git tag
+
+It is a good idea to checkout the version tag directly into a new branch, e.g.:
+
+    git checkout tags/v0.2.19 -b build_0.2.19
 
 Open the file `Makefile.rule` and adopt the build settings to your needs. For
 the goblapack.so in the current release I took the following settings:
