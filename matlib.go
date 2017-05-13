@@ -92,3 +92,24 @@ func (m *Matrix) Subtract(b *Matrix) (*Matrix, error) {
 	}
 	return c, nil
 }
+
+// ScaleColumns scales each column i of the matrix with the factor s[i] of the
+// given vector.
+func (m *Matrix) ScaleColumns(s []float64) *Matrix {
+	if m == nil || s == nil {
+		return nil
+	}
+	scaled := m.Copy()
+	cols := m.Cols
+	if len(s) < cols {
+		cols = len(s)
+	}
+	for col := 0; col < cols; col++ {
+		factor := s[col]
+		for row := 0; row < m.Rows; row++ {
+			val := scaled.GetPtr(row, col)
+			*val = factor * (*val)
+		}
+	}
+	return scaled
+}
