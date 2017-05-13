@@ -113,3 +113,27 @@ func (m *Matrix) ScaleColumns(s []float64) *Matrix {
 	}
 	return scaled
 }
+
+// ScaledColumnSums calculates the sum of each column i which are saled by the
+// factor s[i] of the given vector respectively. Thus the returned result has
+// a length wich is equal to the number of rows of the matrix.
+func (m *Matrix) ScaledColumnSums(s []float64) []float64 {
+	if m == nil || s == nil {
+		return nil
+	}
+	result := make([]float64, m.Rows)
+	cols := m.Cols
+	if len(s) < cols {
+		cols = len(s)
+	}
+	for col := 0; col < cols; col++ {
+		factor := s[col]
+		if factor == 0 {
+			continue
+		}
+		for row := 0; row < m.Rows; row++ {
+			result[row] += (factor * m.Get(row, col))
+		}
+	}
+	return result
+}

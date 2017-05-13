@@ -77,6 +77,14 @@ func TestScaleColumns(t *testing.T) {
 	assertArraysEqual([]float64{2, 4, 2, 4, 1.5, 3}, b.Data, t)
 }
 
+func TestScaledColumnSums(t *testing.T) {
+	a := MakeMatrix([][]float64{
+		{1, 2, 3},
+		{2, 4, 6}})
+	b := a.ScaledColumnSums([]float64{2, 1, 0.5})
+	assertArraysEqual([]float64{5.5, 11}, b, t)
+}
+
 func assertArraysEqual(expexted, actual []float64, t *testing.T) {
 	if len(expexted) != len(actual) {
 		t.Error("array length is different:", len(expexted), "vs", len(actual))
