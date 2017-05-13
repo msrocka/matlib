@@ -1,15 +1,7 @@
 package matlib
 
-/*
-#cgo CFLAGS: -O3
-#cgo LDFLAGS: -L. -lmatlib
-#include "matlib.h"
-*/
-import "C"
-
 import (
 	"errors"
-	"unsafe"
 )
 
 // Matrix is a dense matrix structure that holds the data in column-major order
@@ -99,49 +91,4 @@ func (m *Matrix) Subtract(b *Matrix) (*Matrix, error) {
 		}
 	}
 	return c, nil
-}
-
-// Multiply calculates the matrix-matrix-product C = A * B where A is the matrix
-// on which the method is called, B the method parameter, and C the return value.
-func (m *Matrix) Multiply(b *Matrix) (*Matrix, error) {
-	if m.Cols != b.Rows {
-		return nil, errors.New("Cannot multiply matrices: shapes do not match")
-	}
-	c := Zeros(m.Rows, b.Cols)
-	aPtr := (*C.double)(unsafe.Pointer(&m.Data[0]))
-	bPtr := (*C.double)(unsafe.Pointer(&b.Data[0]))
-	cPtr := (*C.double)(unsafe.Pointer(&c.Data[0]))
-	C.matlib_mmult(
-		C.int(m.Rows),
-		C.int(b.Cols),
-		C.int(m.Cols),
-		aPtr,
-		bPtr,
-		cPtr)
-	return c, nil
-}
-
-// Invert calculates the inverse of the matrix.
-func (m *Matrix) Invert() (*Matrix, error) {
-	inverse := m.Copy()
-	err := inverse.InvertInPlace()
-	return inverse, err
-}
-
-// InvertInPlace calculates the inverse of the matrix which is stored directly
-// in the original matrix.
-func (m *Matrix) InvertInPlace() error {
-	if m.Cols != m.Rows {
-		return errors.New("The matrix is not square")
-	}
-	dataPtr := (*C.double)(unsafe.Pointer(&m.Data[0]))
-	r := C.matlib_invert(C.int(m.Rows), dataPtr)
-	info := int(r)
-	if info > 0 {
-		return errors.New("Matrix is singular")
-	}
-	if info < 0 {
-		return errors.New("Invalid data input")
-	}
-	return nil
 }
