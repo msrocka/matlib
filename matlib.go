@@ -137,3 +137,19 @@ func (m *Matrix) ScaledColumnSums(s []float64) []float64 {
 	}
 	return result
 }
+
+// Slice2d converts the matrix data into a 2-dimensional slice.
+func (m *Matrix) Slice2d() [][]float64 {
+	if m == nil {
+		return nil
+	}
+	data := make([][]float64, m.Rows)
+	for row := 0; row < m.Rows; row++ {
+		rowData := make([]float64, m.Cols)
+		for col := 0; col < m.Cols; col++ {
+			rowData[col] = m.Get(row, col)
+		}
+		data[row] = rowData
+	}
+	return data
+}
