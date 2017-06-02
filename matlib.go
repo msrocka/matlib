@@ -153,3 +153,21 @@ func (m *Matrix) Slice2d() [][]float64 {
 	}
 	return data
 }
+
+// Row returns the values from the row with the given index in a new slice.
+func (m *Matrix) Row(idx int) []float64 {
+	vals := make([]float64, m.Cols)
+	for col := 0; col < m.Cols; col++ {
+		vals[col] = m.Get(idx, col)
+	}
+	return vals
+}
+
+// Col returns the values from the column with the given index in a new slice.
+func (m *Matrix) Col(idx int) []float64 {
+	start := m.Rows * idx
+	end := m.Rows * (1 + idx)
+	vals := make([]float64, m.Rows)
+	copy(vals, m.Data[start:end])
+	return vals
+}
