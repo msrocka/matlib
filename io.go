@@ -7,6 +7,8 @@ import (
 	"io"
 	"math"
 	"os"
+
+	"golang.org/x/exp/mmap"
 )
 
 // LoadColumn reads the given (zero-based) column from the given matrix file.
@@ -70,6 +72,35 @@ func Load(file string) (*Matrix, error) {
 	return m, nil
 }
 
+func MemMap(file string) (*Matrix, error) {
+
+	r, err := mmap.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+
+	rows, cols, err := readShapeAt(r)
+	if err != nil {
+		return nil, err
+	}
+
+	m := Zeros(rows, cols)
+	bin8 := make([]byte, 8)
+	var offset int64 = 8
+	for col := 0; col < cols; col++ {
+		for row := 0; row < rows; row++ {
+			val, err := readFloatAt(bin8, r, offset)
+			offset += 8
+			if err != nil {
+				return nil, err
+			}
+			m.Set(row, col, val)
+		}
+	}
+	return m, nil
+}
+
 func readShape(reader io.Reader) (int, int, error) {
 	bin4 := make([]byte, 4)
 	rows, err := readInt(bin4, reader)
@@ -77,6 +108,19 @@ func readShape(reader io.Reader) (int, int, error) {
 		return -1, -1, err
 	}
 	cols, err := readInt(bin4, reader)
+	if err != nil {
+		return -1, -1, err
+	}
+	return rows, cols, nil
+}
+
+func readShapeAt(reader io.ReaderAt) (int, int, error) {
+	bin4 := make([]byte, 4)
+	rows, err := readIntAt(bin4, reader, 0)
+	if err != nil {
+		return -1, -1, err
+	}
+	cols, err := readIntAt(bin4, reader, 4)
 	if err != nil {
 		return -1, -1, err
 	}
@@ -96,8 +140,32 @@ func readFloat(bin8 []byte, r io.Reader) (float64, error) {
 	return float, err
 }
 
+func readFloatAt(bin8 []byte, r io.ReaderAt, offset int64) (float64, error) {
+	n, err := r.ReadAt(bin8, offset)
+	if err != nil {
+		return 0, err
+	}
+	if n != 8 {
+		return 0, errors.New("Failed to read float: n != 8")
+	}
+	bits := binary.LittleEndian.Uint64(bin8)
+	float := math.Float64frombits(bits)
+	return float, err
+}
+
 func readInt(bin4 []byte, r io.Reader) (int, error) {
 	n, err := r.Read(bin4)
+	if err != nil {
+		return 0, err
+	}
+	if n != 4 {
+		return 0, errors.New("Failed to read int: n != 4")
+	}
+	return int(binary.LittleEndian.Uint32(bin4)), nil
+}
+
+func readIntAt(bin4 []byte, r io.ReaderAt, offset int64) (int, error) {
+	n, err := r.ReadAt(bin4, offset)
 	if err != nil {
 		return 0, err
 	}
