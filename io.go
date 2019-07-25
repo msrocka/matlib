@@ -7,6 +7,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"unsafe"
 
 	"golang.org/x/exp/mmap"
 )
@@ -85,19 +86,38 @@ func MemMap(file string) (*Matrix, error) {
 		return nil, err
 	}
 
-	m := Zeros(rows, cols)
-	bin8 := make([]byte, 8)
-	var offset int64 = 8
-	for col := 0; col < cols; col++ {
-		for row := 0; row < rows; row++ {
-			val, err := readFloatAt(bin8, r, offset)
-			offset += 8
-			if err != nil {
-				return nil, err
-			}
-			m.Set(row, col, val)
-		}
+	bytes := make([]byte, 8*rows*cols)
+	n, err := r.ReadAt(bytes, 8)
+	if err != nil {
+		return nil, err
 	}
+	if n != len(bytes) {
+		return nil, errors.New(
+			"Failed to read matrix; not enough data")
+	}
+
+	data := (*[]float64)(unsafe.Pointer(&bytes))
+	m := &Matrix{
+		Rows: rows,
+		Cols: cols,
+		Data: *data,
+	}
+
+	/*
+		m := Zeros(rows, cols)
+		bin8 := make([]byte, 8)
+		var offset int64 = 8
+		for col := 0; col < cols; col++ {
+			for row := 0; row < rows; row++ {
+				val, err := readFloatAt(bin8, r, offset)
+				offset += 8
+				if err != nil {
+					return nil, err
+				}
+				m.Set(row, col, val)
+			}
+		}
+	*/
 	return m, nil
 }
 
