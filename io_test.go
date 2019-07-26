@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestSaveLoad(t *testing.T) {
+func TestWriteRead(t *testing.T) {
 
 	file := os.TempDir() + "/_matlib_test_io.bin"
 
@@ -21,6 +21,7 @@ func TestSaveLoad(t *testing.T) {
 		}
 	}
 	WriteMatrix(m, file)
+	defer os.Remove(file)
 	t.Log("Saved matrix file", file)
 
 	// load and compare
@@ -44,14 +45,15 @@ func TestSaveLoad(t *testing.T) {
 	}
 }
 
-func TestLoadColumn(t *testing.T) {
+func TestReadColumn(t *testing.T) {
 	m := MakeMatrix([][]float64{
 		{1, 2, 3},
 		{1, 2, 3},
 		{1, 2, 3},
 		{1, 2, 3}})
-	file := os.TempDir() + "/_matlib_test_load_column.bin"
+	file := os.TempDir() + "/_matlib_test_read_column.bin"
 	WriteMatrix(m, file)
+	defer os.Remove(file)
 
 	col, _ := ReadColumn(file, 0)
 	assertArraysEqual([]float64{1, 1, 1, 1}, col, t)
@@ -59,6 +61,30 @@ func TestLoadColumn(t *testing.T) {
 	assertArraysEqual([]float64{2, 2, 2, 2}, col, t)
 	col, _ = ReadColumn(file, 2)
 	assertArraysEqual([]float64{3, 3, 3, 3}, col, t)
+
+}
+
+func TestReadRow(t *testing.T) {
+	m := MakeMatrix([][]float64{
+		{1, 2, 3},
+		{1, 2, 3},
+		{1, 2, 3},
+		{1, 2, 3}})
+	file := os.TempDir() + "/_matlib_test_read_row.bin"
+	WriteMatrix(m, file)
+	defer os.Remove(file)
+
+	for row := 0; row < m.Rows; row++ {
+		vals, err := ReadRow(file, row)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for i, val := range [3]float64{1., 2., 3.} {
+			if vals[i] != val {
+				t.Fatal("ReadRow mapping failed")
+			}
+		}
+	}
 }
 
 func TestMemMap(t *testing.T) {
@@ -68,8 +94,9 @@ func TestMemMap(t *testing.T) {
 		{1, 2, 3},
 		{1, 2, 3},
 		{1, 2, 3}})
-
 	WriteMatrix(m, file)
+	defer os.Remove(file)
+
 	mapped, err := MemMap(file)
 	if err != nil {
 		t.Fatal("failed to read matrix", err)

@@ -23,9 +23,13 @@ func ReadColumn(file string, column int) ([]float64, error) {
 	}
 	defer f.Close()
 
-	rows, _, err := readShape(f)
+	rows, cols, err := readShape(f)
 	if err != nil {
 		return nil, err
+	}
+
+	if column >= cols {
+		return nil, errors.New("The matrix does not have that many columns")
 	}
 
 	offset := column*rows*8 + 8
@@ -43,6 +47,49 @@ func ReadColumn(file string, column int) ([]float64, error) {
 			return nil, err
 		}
 		data[row] = val
+	}
+	return data, nil
+}
+
+// ReadRow reads the given row from the matrix in the given file. As
+// matlib matrices are stored in column-major order this will make
+// n file seeks for a matrix with n columns.
+func ReadRow(file string, row int) ([]float64, error) {
+	f, err := os.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	rows, cols, err := readShape(f)
+	if err != nil {
+		return nil, err
+	}
+
+	if row >= rows {
+		return nil, errors.New("The matrix does not have that many rows")
+	}
+
+	if row > 0 {
+		_, err = f.Seek(int64(row*8), 1)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	data := make([]float64, cols)
+	bin8 := make([]byte, 8)
+	for col := 0; col < cols; col++ {
+		val, err := readFloat(bin8, f)
+		if err != nil {
+			return nil, err
+		}
+		data[col] = val
+		_, err = f.Seek(int64((rows-1)*8), 1)
+		if err != nil {
+			return nil, err
+		}
+
 	}
 	return data, nil
 }

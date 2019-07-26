@@ -4,3 +4,5 @@
 *.a
 *.dylib
 .DS_Store
+debug.test
+debug
