@@ -1,4 +1,7 @@
 # matlib
+
+[![Build Status](https://travis-ci.org/msrocka/matlib.svg?branch=master)](https://travis-ci.org/msrocka/matlib)
+
 `matlib` is a small matrix package with a focus on data exchange and simple
 math functions. This is a fork of the [GreenDelta/matlib](https://github.com/GreenDelta/matlib)
 with the dependencies to the native solver library removed. It would be probably

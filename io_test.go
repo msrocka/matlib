@@ -60,3 +60,26 @@ func TestLoadColumn(t *testing.T) {
 	col, _ = LoadColumn(file, 2)
 	assertArraysEqual([]float64{3, 3, 3, 3}, col, t)
 }
+
+func TestMemMap(t *testing.T) {
+	file := os.TempDir() + "/_matlib_test_memmap.bin"
+	m := MakeMatrix([][]float64{
+		{1, 2, 3},
+		{1, 2, 3},
+		{1, 2, 3},
+		{1, 2, 3}})
+
+	Save(m, file)
+	mapped, err := MemMap(file)
+	if err != nil {
+		t.Fatal("failed to read matrix", err)
+	}
+
+	for row := 0; row < m.Rows; row++ {
+		for col := 0; col < m.Cols; col++ {
+			if m.Get(row, col) != mapped.Get(row, col) {
+				t.Fatal("memory mapping failed")
+			}
+		}
+	}
+}

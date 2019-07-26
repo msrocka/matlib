@@ -73,6 +73,8 @@ func Load(file string) (*Matrix, error) {
 	return m, nil
 }
 
+// MemMap loads the matrix from the given file using memory
+// mapping.
 func MemMap(file string) (*Matrix, error) {
 
 	r, err := mmap.Open(file)
@@ -102,22 +104,6 @@ func MemMap(file string) (*Matrix, error) {
 		Cols: cols,
 		Data: *data,
 	}
-
-	/*
-		m := Zeros(rows, cols)
-		bin8 := make([]byte, 8)
-		var offset int64 = 8
-		for col := 0; col < cols; col++ {
-			for row := 0; row < rows; row++ {
-				val, err := readFloatAt(bin8, r, offset)
-				offset += 8
-				if err != nil {
-					return nil, err
-				}
-				m.Set(row, col, val)
-			}
-		}
-	*/
 	return m, nil
 }
 
