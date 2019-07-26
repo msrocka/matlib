@@ -12,6 +12,13 @@ type Matrix struct {
 	Data []float64
 }
 
+// Shape returns a tuple with the number of rows and columns
+// in the matrix, e.g.:
+//   rows, cols := M.Shape()
+func (m *Matrix) Shape() (int, int) {
+	return m.Rows, m.Cols
+}
+
 // MakeMatrix is a convenience function for creating a matrix from a 2
 // dimensional float slice. It is mainly used for testing purposes.
 func MakeMatrix(data [][]float64) *Matrix {
