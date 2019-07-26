@@ -12,8 +12,11 @@ import (
 	"golang.org/x/exp/mmap"
 )
 
-// LoadColumn reads the given (zero-based) column from the given matrix file.
-func LoadColumn(file string, column int) ([]float64, error) {
+// ReadColumn reads the given (zero-based) column from the matrix in the given
+// file. It first reads the size of the matrix, seeks than to the position of
+// the column in the file, and finally reads it. As matlib matrices are stored
+// in column-major order this should be efficient.
+func ReadColumn(file string, column int) ([]float64, error) {
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
@@ -44,8 +47,8 @@ func LoadColumn(file string, column int) ([]float64, error) {
 	return data, nil
 }
 
-// Load reads a matrix from the given file.
-func Load(file string) (*Matrix, error) {
+// ReadMatrix reads a full matrix from the given file.
+func ReadMatrix(file string) (*Matrix, error) {
 
 	f, err := os.Open(file)
 	if err != nil {
@@ -181,8 +184,8 @@ func readIntAt(bin4 []byte, r io.ReaderAt, offset int64) (int, error) {
 	return int(binary.LittleEndian.Uint32(bin4)), nil
 }
 
-// Save writes the matrix to the given file.
-func Save(m *Matrix, file string) error {
+// WriteMatrix writes the matrix to the given file.
+func WriteMatrix(m *Matrix, file string) error {
 	f, err := os.Create(file)
 	if err != nil {
 		return err

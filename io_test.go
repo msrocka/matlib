@@ -20,11 +20,11 @@ func TestSaveLoad(t *testing.T) {
 			}
 		}
 	}
-	Save(m, file)
+	WriteMatrix(m, file)
 	t.Log("Saved matrix file", file)
 
 	// load and compare
-	clone, err := Load(file)
+	clone, err := ReadMatrix(file)
 	if err != nil {
 		t.Error(err)
 		return
@@ -51,13 +51,13 @@ func TestLoadColumn(t *testing.T) {
 		{1, 2, 3},
 		{1, 2, 3}})
 	file := os.TempDir() + "/_matlib_test_load_column.bin"
-	Save(m, file)
+	WriteMatrix(m, file)
 
-	col, _ := LoadColumn(file, 0)
+	col, _ := ReadColumn(file, 0)
 	assertArraysEqual([]float64{1, 1, 1, 1}, col, t)
-	col, _ = LoadColumn(file, 1)
+	col, _ = ReadColumn(file, 1)
 	assertArraysEqual([]float64{2, 2, 2, 2}, col, t)
-	col, _ = LoadColumn(file, 2)
+	col, _ = ReadColumn(file, 2)
 	assertArraysEqual([]float64{3, 3, 3, 3}, col, t)
 }
 
@@ -69,7 +69,7 @@ func TestMemMap(t *testing.T) {
 		{1, 2, 3},
 		{1, 2, 3}})
 
-	Save(m, file)
+	WriteMatrix(m, file)
 	mapped, err := MemMap(file)
 	if err != nil {
 		t.Fatal("failed to read matrix", err)
