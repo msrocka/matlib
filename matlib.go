@@ -75,6 +75,12 @@ func (m *Matrix) Set(row, col int, value float64) {
 	m.Data[i] = value
 }
 
+// Add adds the given value to the matrix cell with the given coordinates.
+func (m *Matrix) Add(row, col int, value float64) {
+	i := row + m.Rows*col
+	m.Data[i] += value
+}
+
 // Copy creates a copy of the matrix.
 func (m *Matrix) Copy() *Matrix {
 	c := Zeros(m.Rows, m.Cols)
