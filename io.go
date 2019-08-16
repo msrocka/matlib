@@ -157,6 +157,41 @@ func MemMap(file string) (*Matrix, error) {
 	return m, nil
 }
 
+// ReadDiag reads the diagonale of the matrix stored in the given file.
+func ReadDiag(file string) ([]float64, error) {
+	f, err := os.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	rows, cols, err := readShape(f)
+	if err != nil {
+		return nil, err
+	}
+
+	data := make([]float64, cols)
+	bin8 := make([]byte, 8)
+	pos := 1
+	maxpos := rows*cols - 2
+	for col := 0; col < cols; col++ {
+		val, err := readFloat(bin8, f)
+		if err != nil {
+			return nil, err
+		}
+		data[col] = val
+		pos += rows
+		if pos >= maxpos {
+			break
+		}
+		if _, err := f.Seek(int64(rows*8), 1); err != nil {
+			return nil, err
+		}
+	}
+
+	return data, nil
+}
+
 func readShape(reader io.Reader) (int, int, error) {
 	bin4 := make([]byte, 4)
 	rows, err := readInt(bin4, reader)

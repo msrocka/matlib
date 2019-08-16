@@ -87,6 +87,29 @@ func TestReadRow(t *testing.T) {
 	}
 }
 
+func TestReadDiag(t *testing.T) {
+	m := MakeMatrix([][]float64{
+		{1, 2, 3, 4, 5},
+		{6, 7, 8, 9, 10},
+		{11, 12, 13, 14, 15},
+		{16, 17, 18, 19, 20},
+		{21, 22, 23, 24, 25}})
+	file := os.TempDir() + "/_matlib_test_read_diag.bin"
+	WriteMatrix(m, file)
+	defer os.Remove(file)
+
+	diag, err := ReadDiag(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for i, val := range [5]float64{1., 7., 13., 19., 25.} {
+		if diag[i] != val {
+			t.Fatal("ReadDiag failed")
+		}
+	}
+}
+
 func TestMemMap(t *testing.T) {
 	file := os.TempDir() + "/_matlib_test_memmap.bin"
 	m := MakeMatrix([][]float64{
